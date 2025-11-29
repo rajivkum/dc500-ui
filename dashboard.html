@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC 500 Controller | Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="udp-styles.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="dashboard-body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand-section">
+            <img src="Radiogeet edge white logo.png" alt="Logo" class="brand-logo" style="height: 70px; width: auto;">
+        </div>
+
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" onclick="switchTab('dashboard', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                Dashboard
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('settings', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg>
+                Device Settings
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('firmware', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Firmware Update
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('events', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+                Events
+            </a>
+        </nav>
+
+        <!-- Live Data Section -->
+        <div class="live-data-section">
+            <a href="#" class="live-data-header" onclick="switchTab('livedata', this); return false;">
+                <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0;">Live Data</h3>
+                <span style="font-size: 12px; color: #10b981;">● LIVE</span>
+            </a>
+            <div class="live-data-content">
+                <div class="live-data-item">
+                    <span class="live-data-label">Long Travel</span>
+                    <span class="live-data-value" id="sidebarLT">23.90</span>
+                    <span class="live-data-unit">m</span>
+                </div>
+                <div class="live-data-item">
+                    <span class="live-data-label">Cross Travel</span>
+                    <span class="live-data-value" id="sidebarCT">11.95</span>
+                    <span class="live-data-unit">m</span>
+                </div>
+                <div class="live-data-item">
+                    <span class="live-data-label">Load</span>
+                    <span class="live-data-value" id="sidebarLoad">832</span>
+                    <span class="live-data-unit">kg</span>
+                </div>
+                <div class="live-data-item">
+                    <span class="live-data-label">Column</span>
+                    <span class="live-data-value" id="sidebarColumn">22</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper">
+
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <!-- Optional Breadcrumbs or Title -->
+            </div>
+            <div class="header-right">
+                <span class="status-indicator small" title="System Online" aria-hidden="true"></span>
+
+                <div class="header-quick" role="navigation" aria-label="Product links">
+                    <span class="console-link">My product console</span>
+                    <span class="sep">|</span>
+                    <span class="plant-link" id="userName">Plant Manager</span>
+                </div>
+
+                <div class="user-profile" title="Profile">
+                    <svg class="user-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+
+                <button class="logout-btn" onclick="logout()" aria-label="Logout">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-scroll">
+
+            <!-- DASHBOARD TAB -->
+            <div id="tab-dashboard" class="content-section">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0;">Dashboard</h1>
+                    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Real-time system monitoring and control</p>
+                </div>
+                <div class="dashboard-grid">
+
+                    <!-- Row 1: KPI Widgets -->
+                    <div class="card kpi-widget" style="display: none;">
+                        <div class="card-header">
+                            <span class="card-title">Speed</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="kpi-value">42 km/h</div>
+                            <div class="kpi-label">Average Speed</div>
+                        </div>
+                    </div>
+
+                    <div class="card kpi-widget">
+                        <div class="card-header">
+                            <span class="card-title">Temperature</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="kpi-value text-danger" id="tempDisplay">27 °C</div>
+                            <div class="kpi-label">Motor Temp</div>
+                        </div>
+                    </div>
+
+                    <div class="card kpi-widget">
+                        <div class="card-header">
+                            <span class="card-title">Humidity</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="kpi-value" id="humDisplay">67%</div>
+                            <div class="kpi-label">Relative Humidity</div>
+                        </div>
+                    </div>
+
+                    <div class="card kpi-widget" style="display: none;">
+                        <div class="card-header">
+                            <span class="card-title">Firmware version</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="kpi-value">1.0.0</div>
+                            <div class="kpi-label">Current Version</div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Controls & Charts -->
+                    <div class="card controls-widget" style="display: none;">
+                        <div class="card-header">
+                            <span class="card-title">LED Control Panel</span>
+                            <label class="toggle-switch" style="transform: scale(0.8);">
+                                <input type="checkbox" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="card-body">
+                            <div class="control-group">
+                                <div class="control-header">
+                                    <span>Long Travel (LT)</span>
+                                    <span class="text-primary" id="ltVal">0 m</span>
+                                </div>
+                                <input type="range" class="slider-track" id="sliderLT" min="0" max="100" value="0"
+                                    disabled>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-header">
+                                    <span>Cross Travel (CT)</span>
+                                    <span class="text-primary" id="ctVal">0 m</span>
+                                </div>
+                                <input type="range" class="slider-track" id="sliderCT" min="0" max="100" value="0"
+                                    disabled>
+                            </div>
+                            <div class="control-group" style="margin-top: 20px;">
+                                <div class="control-header">
+                                    <span>Manual Override</span>
+                                    <span class="card-badge" id="controlMode"
+                                        style="font-size: 11px; padding: 2px 6px; background: #eee; border-radius: 4px;">VIEW
+                                        ONLY</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-widget">
+                        <div class="card-header">
+                            <span class="card-title">Environmental Gauges</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                <!-- Humidity Gauge -->
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px;">Humidity</div>
+                                    <div style="position: relative; width: 160px; height: 100px;">
+                                        <canvas id="humidityGauge"></canvas>
+                                    </div>
+                                    <div style="margin-top: 12px; font-size: 32px; font-weight: 700; color: var(--text-dark);" id="humidityValue">67</div>
+                                    <div style="font-size: 12px; color: var(--text-muted);">% RH</div>
+                                </div>
+                                <!-- Temperature Gauge -->
+                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px;">Temperature</div>
+                                    <div style="position: relative; width: 100%; height: 240px;">
+                                        <canvas id="tempChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Crane Visualization -->
+                    <div class="card crane-widget" style="display: none;">
+                        <div class="card-header">
+                            <span class="card-title">Live Crane Tracking</span>
+                            <span class="text-success" style="font-size: 12px; font-weight: 600;">● LIVE</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="collision-alert" id="zoneAlert"
+                                style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 10; background: #ffebee; color: #c62828; padding: 8px 16px; border-radius: 20px; font-weight: 600; display: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                ⚠️ RESTRICTED ZONE ENTRY
+                            </div>
+                            <div class="floor-plan">
+                                <div class="danger-zone">
+                                    NO ENTRY
+                                </div>
+                                <div class="crane-beam" id="craneBridge">
+                                    <div class="crane-hoist" id="craneTrolley"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-widget" style="display: none;">
+                        <div class="card-header">
+                            <span class="card-title">Load History</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="loadChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- LIVE DATA TAB - Crane Operations -->
+            <div id="tab-livedata" class="content-section hidden">
+                <div class="crane-operations-container">
+                    <h1 style="margin: 0 0 24px 0; font-size: 28px; font-weight: 700; color: var(--text-dark);">Crane Operations</h1>
+                    
+                    <!-- Crane Visualization Card -->
+                    <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                        <div style="position: relative; background: #f1f5f9; border-radius: 10px; padding: 30px 20px; min-height: 450px; display: flex; flex-direction: column; justify-content: center;">
+                            
+                            <!-- Position Badges -->
+                            <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
+                                LT: 23.90m
+                            </div>
+                            
+                            <!-- Top Beam with Column Numbers -->
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding: 0 20px;">
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">1</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">3</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">4</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">5</div>
+                            </div>
+                            
+                            <!-- Main Beam -->
+                            <div style="background: #3d4757; height: 20px; border-radius: 3px; position: relative; margin-bottom: 60px;">
+                                <!-- Hoist Hook Position -->
+                                <div style="position: absolute; left: 50%; transform: translateX(-50%); top: -30px; width: 50px; height: 50px; background: linear-gradient(180deg, #64748b 0%, #475569 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+                                    <div style="width: 20px; height: 20px; background: #1e40af; border-radius: 50%;"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Maintenance Area -->
+                            <div style="position: absolute; left: 40px; top: 100px; width: 180px; height: 280px; background: linear-gradient(45deg, #fbbf24 25%, transparent 25%, transparent 50%, #fbbf24 50%, #fbbf24 75%, transparent 75%, transparent); background-size: 30px 30px; border: 3px dashed #d97706; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #b45309; font-size: 11px; text-align: center; padding: 10px;">
+                                <span>MAINTENANCE<br>AREA</span>
+                            </div>
+                            
+                            <!-- Load Badge -->
+                            <div style="position: absolute; left: 50%; top: 220px; transform: translateX(-50%); background: #1e293b; color: #60a5fa; padding: 12px 20px; border-radius: 8px; border: 2px solid #60a5fa; font-weight: 700; font-size: 18px; font-family: 'Courier New', monospace;">
+                                832
+                            </div>
+                            
+                            <!-- CT Badge -->
+                            <div style="position: absolute; right: 60px; top: 240px; background: #1e293b; color: #60a5fa; padding: 10px 14px; border-radius: 8px; border: 2px solid #60a5fa; font-weight: 600; font-size: 12px;">
+                                CT: 11.95m
+                            </div>
+                            
+                            <!-- Vertical Cable -->
+                            <div style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%); width: 12px; height: 280px; background: linear-gradient(90deg, #475569 0%, #64748b 50%, #475569 100%); border-radius: 6px;"></div>
+                            
+                            <!-- Bottom Beam -->
+                            <div style="background: #3d4757; height: 20px; border-radius: 3px; margin-top: 60px;"></div>
+                            
+                            <!-- Bottom Column Numbers -->
+                            <div style="display: flex; justify-content: space-between; margin-top: 20px; padding: 0 20px;">
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">1</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">2</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">3</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">4</div>
+                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">5</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Display Row -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Long Travel</div>
+                            <div style="font-size: 32px; font-weight: 700; color: var(--text-dark); font-family: 'Courier New', monospace; margin-bottom: 6px;">23.90</div>
+                            <div style="font-size: 14px; color: var(--text-muted); display: flex; gap: 6px; align-items: center;">
+                                <span>m</span>
+                                <select style="padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; background: white; cursor: pointer;">
+                                    <option>m</option>
+                                    <option>ft</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Cross Travel</div>
+                            <div style="font-size: 32px; font-weight: 700; color: var(--text-dark); font-family: 'Courier New', monospace; margin-bottom: 6px;">11.95</div>
+                            <div style="font-size: 14px; color: var(--text-muted); display: flex; gap: 6px; align-items: center;">
+                                <span>m</span>
+                                <select style="padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; background: white; cursor: pointer;">
+                                    <option>m</option>
+                                    <option>ft</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
+                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Column</div>
+                            <div style="font-size: 32px; font-weight: 700; color: #3b82f6; font-family: 'Courier New', monospace; margin-bottom: 6px;">22</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EVENTS TAB -->
+            <div id="tab-events" class="content-section hidden">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0;">Events</h1>
+                    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">System events and activity log</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Event Log</span>
+                        <button style="padding: 10px 16px; background: var(--brand-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            save all
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc;">
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">ID</th>
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">Timestamp</th>
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">Message</th>
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">Priority</th>
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">Status</th>
+                                        <th style="text-align: left; padding: 12px; color: var(--text-dark); font-weight: 600;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="padding: 12px; color: var(--text-dark);">0</td>
+                                        <td style="padding: 12px; color: var(--text-dark);">1738653279</td>
+                                        <td style="padding: 12px; color: var(--text-dark);">Some event</td>
+                                        <td style="padding: 12px;"><input type="number" value="2" style="width: 60px; padding: 6px; border: 1px solid #e2e8f0; border-radius: 4px;"></td>
+                                        <td style="padding: 12px;"><select style="padding: 6px 8px; border: 1px solid #e2e8f0; border-radius: 4px; background: white; cursor: pointer;"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></td>
+                                        <td style="padding: 12px;">
+                                            <button style="padding: 8px 16px; background: var(--brand-blue); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                                </svg>
+                                                save
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FIRMWARE UPDATE TAB -->
+            <div id="tab-firmware" class="content-section hidden">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0;">Firmware Update</h1>
+                    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Manage device firmware and system upgrades</p>
+                </div>
+                <div style="max-width: 600px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Firmware Update</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="margin-bottom: 24px;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 8px; display: block;">Current firmware version</label>
+                                <div style="font-size: 18px; font-weight: 600; color: var(--text-dark);">1.0.0</div>
+                            </div>
+                            <div>
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 8px; display: block;">Upload new firmware</label>
+                                <div style="display:flex; gap:8px; align-items: center;">
+                                    <input id="firmwareFileFW" type="file" accept=".bin,.img" style="display:none;">
+                                    <button id="firmwareChooseBtnFW" type="button" onclick="document.getElementById('firmwareFileFW').click()" style="padding: 12px 20px; background: var(--brand-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">select .bin file ...</button>
+                                    <button id="firmwareUploadBtnFW" type="button" onclick="uploadFirmwareFW()" disabled style="padding: 12px 20px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px;">upload</button>
+                                </div>
+                                <div id="firmwareFileNameFW" style="margin-top:12px; font-size:13px; color:var(--text-muted);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS TAB -->
+            <div id="tab-settings" class="content-section hidden">
+                <div style="margin-bottom: 32px;">
+                    <h1 style="font-size: 28px; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0;">Device Settings</h1>
+                    <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Configure network and device parameters</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1200px;">
+                    
+                    <!-- Network Settings Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Network Settings</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-row" style="margin-top: 0;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">IP address</label>
+                                <input type="text" class="setting-input" value="192.168.0.42" placeholder="e.g., 192.168.0.42" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100%; font-size: 14px;">
+                            </div>
+                            <div class="settings-row" style="margin-top: 16px;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">Gateway address</label>
+                                <input type="text" class="setting-input" value="192.168.0.1" placeholder="e.g., 192.168.0.1" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100%; font-size: 14px;">
+                            </div>
+                            <div class="settings-row" style="margin-top: 16px;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">Network mask</label>
+                                <input type="text" class="setting-input" value="255.255.255.0" placeholder="e.g., 255.255.255.0" style="padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; width: 100%; font-size: 14px;">
+                            </div>
+                            <button style="margin-top: 24px; padding: 12px 24px; background: var(--brand-gradient); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                </svg>
+                                save
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Device Actions Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">Device Actions</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="settings-row" style="margin-bottom: 12px;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">Upload config / firmware file</label>
+                                <div style="display:flex; gap:8px; align-items: center;">
+                                    <input id="firmwareFile" type="file" accept=".bin,.img" style="display:none;">
+                                    <button id="firmwareChooseBtn" type="button" onclick="document.getElementById('firmwareFile').click()" style="padding: 10px 16px; background: var(--brand-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px;">choose file ...</button>
+                                    <button id="firmwareUploadBtn" type="button" onclick="uploadFirmware()" disabled style="padding: 10px 16px; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600px; font-size: 13px;">upload</button>
+                                </div>
+                                <div id="firmwareFileName" style="margin-top:8px; font-size:13px; color:var(--text-muted);"></div>
+                            </div>
+                            <div class="settings-row" style="margin-bottom: 12px;">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">Reboot device</label>
+                                <button style="padding: 10px 16px; background: var(--brand-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M23 4v6h-6"></path>
+                                        <path d="M1 20v-6h6"></path>
+                                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36M20.49 15a9 9 0 0 1-14.85 3.36"></path>
+                                    </svg>
+                                    reboot
+                                </button>
+                            </div>
+                            <div class="settings-row">
+                                <label style="font-size: 14px; color: var(--text-dark); font-weight: 500; margin-bottom: 6px; display: block;">Format SD card</label>
+                                <button style="padding: 10px 16px; background: var(--brand-blue); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 13px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21.5 2v19H2.5V2z"></path>
+                                        <path d="M5 7h14M5 12h14M5 17h10"></path>
+                                    </svg>
+                                    format
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+
+</html>

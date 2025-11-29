@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC 500 | Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="login-wrapper">
+
+        <div class="login-card">
+
+            <div class="brand-header">
+                <img src="Radiogeet blue logo.png" alt="RadioGeet" class="logo-img">
+            </div>
+
+            <div class="login-header-text">
+                <h2 style="font-weight: 700;">Sign In</h2>
+            </div>
+
+            <form id="loginForm" class="login-form">
+
+                <div class="input-group floating-label">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <input type="text" id="username" class="login-input with-icon" placeholder=" " autocomplete="off"
+                        required>
+                    <label class="input-label" for="username">Username</label>
+                </div>
+
+                <div class="input-group floating-label">
+                    <div class="input-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <input type="password" id="password" class="login-input with-icon" placeholder=" " required>
+                    <label class="input-label" for="password">Password</label>
+                </div>
+
+                <div class="form-actions">
+                    <label class="checkbox-container">
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span>Sign In</span>
+                </button>
+
+                <div id="errorMsg" class="error-text">
+                    <span class="error-icon">!</span> Access Denied: Invalid Credentials
+                </div>
+            </form>
+
+            <div class="login-footer">
+                &copy; 2025 RadioGeet digital pvt ltd
+            </div>
+
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+/* UDP Settings Styles */
+.setting-input {
+    padding: 8px 12px;
+    background: white;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 8px;
+    color: var(--text-dark);
+    font-size: 14px;
+    width: 200px;
+    transition: all 0.2s;
+}
+
+.setting-input:focus {
+    outline: none;
+    border-color: var(--brand-blue);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+}
+
+.udp-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.udp-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.udp-btn.primary {
+    background: var(--brand-gradient);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.2);
+}
+
+.udp-btn.primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.3);
+}
+
+.udp-btn.secondary {
+    background: white;
+    color: var(--brand-blue);
+    border: 1.5px solid var(--brand-blue);
+}
+
+.udp-btn.secondary:hover {
+    background: #eff6ff;
+}
+
+.connection-info {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--bg-light);
+    border-radius: 10px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 14px;
+}
+
+.info-label {
+    color: var(--text-muted);
+}
+
+.info-value {
+    color: var(--text-dark);
+    font-weight: 600;
+}
