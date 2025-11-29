@@ -47,74 +47,135 @@ const zoneAlert = document.getElementById('zoneAlert');
 const devLogs = document.getElementById('devLogs');
 
 // --- SIMULATION VARIABLES ---
-let ltPos = 0;
-let ctPos = 0;
-let ltDir = 0.5;
-let ctDir = 0.8;
-let loadWeight = 1.0;
+let ltPos = 23.9;
+let ctPos = 11.95;
+let loadWeight = 832;
+let columnNum = 2;
 
 // --- CHARTS CONFIG ---
-let envChart, loadChart;
+let humidityChart, tempChart, loadChart, modernEnvChart;
+let liveSparkChart;
+// --- Live Crane Monitoring Animation ---
+function renderCraneColumns() {
+    const columns = document.getElementById('craneColumns');
+    if (!columns) return;
+    columns.innerHTML = '';
+    for (let i = 1; i <= 22; i++) {
+        const col = document.createElement('div');
+        col.style.flex = '1';
+        col.style.textAlign = 'center';
+        col.style.fontSize = '11px';
+        col.style.color = '#3b82f6';
+        col.style.fontWeight = '600';
+        col.innerText = i;
+        columns.appendChild(col);
+    }
+}
 
-function initCharts() {
-    // 1. Humidity Gauge (Doughnut)
-    const ctxHumidity = document.getElementById('humidityGauge');
-    if (ctxHumidity) {
-        const humCtx = ctxHumidity.getContext('2d');
-        new Chart(humCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Used', 'Remaining'],
-                datasets: [{
-                    data: [67, 33],
-                    backgroundColor: ['#10b981', '#e5e7eb'],
-                    borderColor: ['#059669', '#d1d5db'],
-                    borderWidth: 2,
-                    circumference: 180,
-                    rotation: 270
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                }
-            }
+function updateCranePosition(lt, ct) {
+    // LT: 0-100, CT: 0-100
+    const cart = document.getElementById('craneCart');
+    const track = document.getElementById('craneTrack');
+    const ltLabel = document.getElementById('craneLTLabel');
+    const ctLabel = document.getElementById('craneCTLabel');
+    if (!cart || !track || !ltLabel || !ctLabel) return;
+    // Track width
+    const trackWidth = track.offsetWidth - 170; // 130px maintenance + 40px cart
+    // Map LT to left position (simulate columns)
+    const left = 130 + Math.max(0, Math.min(trackWidth, (lt / 100) * trackWidth));
+    cart.style.left = left + 'px';
+    // Update labels
+    ltLabel.innerText = `LT: ${lt.toFixed(2)}m`;
+    ctLabel.innerText = `CT: ${ct.toFixed(2)}m`;
+    cart.innerHTML = `<span style='color:#fff;font-weight:700;'>${loadWeight}</span>`;
+// --- SLIDER FOR COLUMNS ---
+let simInterval = null;
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('craneColumnSlider');
+    const startBtn = document.getElementById('startSimBtn');
+    const stopBtn = document.getElementById('stopSimBtn');
+
+    if (slider) {
+        slider.addEventListener('input', function(e) {
+            columnNum = parseInt(e.target.value);
+            ltPos = columnNum * (100/22);
+            ctPos = Math.random() * 100; // Simulate CT movement
+            loadWeight = Math.floor(500 + Math.random() * 500); // Simulate load
+            updateCranePosition(ltPos, ctPos);
         });
     }
+    // Initial position
+    updateCranePosition(ltPos, ctPos);
 
-    // 2. Temperature Line Chart
-    const ctxTemp = document.getElementById('tempChart');
-    if (ctxTemp) {
-        tempChart = new Chart(ctxTemp.getContext('2d'), {
+    function startSimulation() {
+        if (simInterval) return;
+        simInterval = setInterval(function() {
+            columnNum = Math.floor(1 + Math.random() * 22);
+            ltPos = columnNum * (100/22);
+            ctPos = Math.random() * 100;
+            loadWeight = Math.floor(500 + Math.random() * 500);
+            updateCranePosition(ltPos, ctPos);
+            if (slider) slider.value = columnNum;
+        }, 2000);
+    }
+    function stopSimulation() {
+        if (simInterval) {
+            clearInterval(simInterval);
+            simInterval = null;
+        }
+    }
+    if (startBtn) startBtn.addEventListener('click', startSimulation);
+    if (stopBtn) stopBtn.addEventListener('click', stopSimulation);
+});
+}
+
+document.addEventListener('DOMContentLoaded', renderCraneColumns);
+
+function initCharts() {
+    // Modern Humidity & Temperature Graph
+    const ctxModernEnv = document.getElementById('modernEnvChart');
+    if (ctxModernEnv) {
+        modernEnvChart = new Chart(ctxModernEnv.getContext('2d'), {
             type: 'line',
             data: {
-                labels: ['21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00'],
-                datasets: [{
-                    label: 'Temperature (°C)',
-                    data: [42, 43, 42, 41, 42, 43, 42, 42],
-                    borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    borderWidth: 2,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 3,
-                    pointBackgroundColor: '#f59e0b'
-                }]
+                labels: Array(30).fill(''),
+                datasets: [
+                    {
+                        label: 'Temperature (°C)',
+                        data: Array(30).fill(42),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245,158,11,0.10)',
+                        borderWidth: 3,
+                        tension: 0.45,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        cubicInterpolationMode: 'monotone',
+                    },
+                    {
+                        label: 'Humidity (%)',
+                        data: Array(30).fill(67),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.10)',
+                        borderWidth: 3,
+                        tension: 0.45,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 4,
+                        cubicInterpolationMode: 'monotone',
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: false,
+                animation: { duration: 900, easing: 'easeOutQuart' },
                 plugins: {
-                    legend: { position: 'top' }
+                    legend: { display: true, position: 'top' },
+                    tooltip: { enabled: true }
                 },
                 scales: {
-                    x: {
-                        grid: { display: true, color: '#e5e7eb' }
-                    },
+                    x: { display: false },
                     y: {
                         beginAtZero: false,
                         suggestedMin: 0,
@@ -154,6 +215,38 @@ function initCharts() {
                     x: { display: false, grid: { display: false } },
                     y: { beginAtZero: true, suggestedMax: 5 }
                 }
+            }
+        });
+    }
+
+    // 4. Small sparkline chart for livedata tab (combined)
+    const ctxLive = document.getElementById('livedataSpark');
+    if (ctxLive) {
+        liveSparkChart = new Chart(ctxLive.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    label: 'Temp (°C)',
+                    data: Array(20).fill(42),
+                    borderColor: '#f59e0b',
+                    backgroundColor: 'rgba(245,158,11,0.08)',
+                    tension: 0.3,
+                    fill: true
+                }, {
+                    label: 'Humidity (%)',
+                    data: Array(20).fill(60),
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16,185,129,0.06)',
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { display: false }, y: { display: false } }
             }
         });
     }
@@ -201,12 +294,20 @@ function updateVisuals(lt, ct) {
     if (ltVal) ltVal.innerText = Math.round(lt) + " m";
     if (ctVal) ctVal.innerText = Math.round(ct) + " m";
 
-    // Update 3D Elements
-    // LT moves Y axis (top %)
-    if (bridge) bridge.style.top = lt + "%";
+    // Also update top live-data (if present)
+    const topLT = document.getElementById('topLT');
+    const topCT = document.getElementById('topCT');
+    if (topLT) topLT.innerText = Math.round(lt) + " m";
+    if (topCT) topCT.innerText = Math.round(ct) + " m";
 
-    // CT moves X axis (left %)
-    if (trolley) trolley.style.left = ct + "%";
+    // Also update live-tab values if present
+    const liveLT = document.getElementById('liveLT');
+    const liveCT = document.getElementById('liveCT');
+    if (liveLT) liveLT.innerText = Math.round(lt) + ' m';
+    if (liveCT) liveCT.innerText = Math.round(ct) + ' m';
+
+    // Update crane animation in live data tab
+    updateCranePosition(lt, ct);
 }
 
 function checkSafetyZones(lt, ct) {
@@ -225,19 +326,16 @@ function checkSafetyZones(lt, ct) {
 }
 
 function updateSensors() {
-    // Only update every 60 frames approx to reduce jitter
-    if (Math.random() > 0.05) return;
+    // Reduced jitter but faster updates for a lively dashboard
+    if (Math.random() > 0.45) return;
 
     // Temp: Base 42 +/- random
     let temp = 42 + (Math.random() * 2 - 1);
     const tempDisplay = document.getElementById('tempDisplay');
-    if (tempDisplay) tempDisplay.innerText = temp.toFixed(1);
-
-    // Temp Bar Color
-    const bar = document.getElementById('tempBar');
-    if (bar) {
-        if (temp > 45) { bar.style.background = '#ef4444'; }
-        else { bar.style.background = '#10b981'; }
+    if (tempDisplay) {
+        tempDisplay.innerText = temp.toFixed(1);
+        tempDisplay.classList.add('pulse');
+        setTimeout(() => tempDisplay.classList.remove('pulse'), 350);
     }
 
     // Load: Base 1.2 tons +/- random
@@ -250,17 +348,50 @@ function updateSensors() {
     const humDisplay = document.getElementById('humDisplay');
     if (humDisplay) {
         humDisplay.innerText = Math.round(hum);
+        const humidityValue = document.getElementById('humidityValue');
+        if (humidityValue) humidityValue.innerText = Math.round(hum);
     }
 
-    // UPDATE CHARTS
-    if (envChart) {
-        // Remove oldest
-        envChart.data.datasets[0].data.shift();
-        envChart.data.datasets[1].data.shift();
-        // Add newest
-        envChart.data.datasets[0].data.push(temp);
-        envChart.data.datasets[1].data.push(hum);
-        envChart.update('none'); // 'none' mode for performance
+    // Update top load element (if present) in kg for a familiar readout
+    const topLoadEl = document.getElementById('topLoad');
+    if (topLoadEl) {
+        // loadWeight is in tons in the simulation; present kg when reasonable
+        const kg = Math.round(loadWeight * 1000);
+        topLoadEl.innerText = kg + ' kg';
+    }
+
+    // Update live-tab values
+    const liveLoad = document.getElementById('liveLoad');
+    if (liveLoad) {
+        liveLoad.innerText = Math.round(loadWeight * 1000) + ' kg';
+        liveLoad.classList.add('pulse');
+        setTimeout(() => liveLoad.classList.remove('pulse'), 300);
+    }
+    const liveTemp = document.getElementById('liveTemp');
+    if (liveTemp) {
+        liveTemp.innerText = temp.toFixed(1) + ' °C';
+        liveTemp.classList.add('pulse');
+        setTimeout(() => liveTemp.classList.remove('pulse'), 300);
+    }
+    const liveHum = document.getElementById('liveHum');
+    if (liveHum) liveHum.innerText = Math.round(hum) + '%';
+
+    // Push into live spark chart
+    if (liveSparkChart) {
+        liveSparkChart.data.datasets[0].data.shift();
+        liveSparkChart.data.datasets[0].data.push(parseFloat(temp.toFixed(1)));
+        liveSparkChart.data.datasets[1].data.shift();
+        liveSparkChart.data.datasets[1].data.push(Math.round(hum));
+        liveSparkChart.update('none');
+    }
+
+    // UPDATE MODERN CHART
+    if (modernEnvChart) {
+        modernEnvChart.data.datasets[0].data.shift();
+        modernEnvChart.data.datasets[0].data.push(parseFloat(temp.toFixed(1)));
+        modernEnvChart.data.datasets[1].data.shift();
+        modernEnvChart.data.datasets[1].data.push(Math.round(hum));
+        modernEnvChart.update();
     }
 
     if (loadChart) {
@@ -472,13 +603,19 @@ function devAction(msg) {
 function switchTab(tabId, btn) {
     // Hide all
     document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
-    document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
     // Show target
     const target = document.getElementById('tab-' + tabId);
     if (target) target.classList.remove('hidden');
 
     if (btn) btn.classList.add('active');
+
+    // If switching to dashboard, ensure charts are animated and visible
+    if (tabId === 'dashboard') {
+        if (tempChart) tempChart.update();
+        if (humidityChart) humidityChart.update();
+    }
 }
 
 function logout() {

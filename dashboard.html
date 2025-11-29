@@ -55,36 +55,17 @@
                 </svg>
                 Events
             </a>
+            <a href="#" class="nav-item" onclick="switchTab('livedata', this)">
+                <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M3 12h3v6H3z"></path>
+                    <path d="M10 8h3v10h-3z"></path>
+                    <path d="M17 4h3v14h-3z"></path>
+                </svg>
+                Live Data
+            </a>
         </nav>
 
-        <!-- Live Data Section -->
-        <div class="live-data-section">
-            <a href="#" class="live-data-header" onclick="switchTab('livedata', this); return false;">
-                <h3 style="font-size: 14px; font-weight: 600; color: white; margin: 0;">Live Data</h3>
-                <span style="font-size: 12px; color: #10b981;">● LIVE</span>
-            </a>
-            <div class="live-data-content">
-                <div class="live-data-item">
-                    <span class="live-data-label">Long Travel</span>
-                    <span class="live-data-value" id="sidebarLT">23.90</span>
-                    <span class="live-data-unit">m</span>
-                </div>
-                <div class="live-data-item">
-                    <span class="live-data-label">Cross Travel</span>
-                    <span class="live-data-value" id="sidebarCT">11.95</span>
-                    <span class="live-data-unit">m</span>
-                </div>
-                <div class="live-data-item">
-                    <span class="live-data-label">Load</span>
-                    <span class="live-data-value" id="sidebarLoad">832</span>
-                    <span class="live-data-unit">kg</span>
-                </div>
-                <div class="live-data-item">
-                    <span class="live-data-label">Column</span>
-                    <span class="live-data-value" id="sidebarColumn">22</span>
-                </div>
-            </div>
-        </div>
+        <!-- Live Data section moved to top of Dashboard (per UI change) -->
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -126,9 +107,29 @@
 
             <!-- DASHBOARD TAB -->
             <div id="tab-dashboard" class="content-section">
-                <div style="margin-bottom: 32px;">
+                <div style="margin-bottom: 12px;">
                     <h1 style="font-size: 28px; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0;">Dashboard</h1>
                     <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Real-time system monitoring and control</p>
+                </div>
+
+                <!-- Top Live Data (standard font & size) -->
+                <div class="top-live-data" role="status" aria-live="polite">
+                    <div class="top-live-item">
+                        <span class="top-live-label">Long Travel</span>
+                        <span class="top-live-value" id="topLT">23.90 m</span>
+                    </div>
+                    <div class="top-live-item">
+                        <span class="top-live-label">Cross Travel</span>
+                        <span class="top-live-value" id="topCT">11.95 m</span>
+                    </div>
+                    <div class="top-live-item">
+                        <span class="top-live-label">Load</span>
+                        <span class="top-live-value" id="topLoad">832 kg</span>
+                    </div>
+                    <div class="top-live-item">
+                        <span class="top-live-label">Column</span>
+                        <span class="top-live-value" id="topColumn">22</span>
+                    </div>
                 </div>
                 <div class="dashboard-grid">
 
@@ -210,33 +211,19 @@
                         </div>
                     </div>
 
+                    <!-- Modern Humidity & Temperature Graph -->
                     <div class="card chart-widget">
                         <div class="card-header">
-                            <span class="card-title">Environmental Gauges</span>
+                            <span class="card-title">Humidity & Temperature Trends</span>
                         </div>
                         <div class="card-body">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                                <!-- Humidity Gauge -->
-                                <div style="display: flex; flex-direction: column; align-items: center;">
-                                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px;">Humidity</div>
-                                    <div style="position: relative; width: 160px; height: 100px;">
-                                        <canvas id="humidityGauge"></canvas>
-                                    </div>
-                                    <div style="margin-top: 12px; font-size: 32px; font-weight: 700; color: var(--text-dark);" id="humidityValue">67</div>
-                                    <div style="font-size: 12px; color: var(--text-muted);">% RH</div>
-                                </div>
-                                <!-- Temperature Gauge -->
-                                <div style="display: flex; flex-direction: column; align-items: center;">
-                                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 16px;">Temperature</div>
-                                    <div style="position: relative; width: 100%; height: 240px;">
-                                        <canvas id="tempChart"></canvas>
-                                    </div>
-                                </div>
+                            <div class="chart-container" style="height: 260px;">
+                                <canvas id="modernEnvChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Row 3: Crane Visualization -->
+                    Row 3: Crane Visualization
                     <div class="card crane-widget" style="display: none;">
                         <div class="card-header">
                             <span class="card-title">Live Crane Tracking</span>
@@ -274,99 +261,65 @@
 
             <!-- LIVE DATA TAB - Crane Operations -->
             <div id="tab-livedata" class="content-section hidden">
-                <div class="crane-operations-container">
-                    <h1 style="margin: 0 0 24px 0; font-size: 28px; font-weight: 700; color: var(--text-dark);">Crane Operations</h1>
-                    
-                    <!-- Crane Visualization Card -->
-                    <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
-                        <div style="position: relative; background: #f1f5f9; border-radius: 10px; padding: 30px 20px; min-height: 450px; display: flex; flex-direction: column; justify-content: center;">
-                            
-                            <!-- Position Badges -->
-                            <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
-                                LT: 23.90m
-                            </div>
-                            
-                            <!-- Top Beam with Column Numbers -->
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding: 0 20px;">
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">1</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">3</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">4</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">5</div>
-                            </div>
-                            
-                            <!-- Main Beam -->
-                            <div style="background: #3d4757; height: 20px; border-radius: 3px; position: relative; margin-bottom: 60px;">
-                                <!-- Hoist Hook Position -->
-                                <div style="position: absolute; left: 50%; transform: translateX(-50%); top: -30px; width: 50px; height: 50px; background: linear-gradient(180deg, #64748b 0%, #475569 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
-                                    <div style="width: 20px; height: 20px; background: #1e40af; border-radius: 50%;"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Maintenance Area -->
-                            <div style="position: absolute; left: 40px; top: 100px; width: 180px; height: 280px; background: linear-gradient(45deg, #fbbf24 25%, transparent 25%, transparent 50%, #fbbf24 50%, #fbbf24 75%, transparent 75%, transparent); background-size: 30px 30px; border: 3px dashed #d97706; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #b45309; font-size: 11px; text-align: center; padding: 10px;">
-                                <span>MAINTENANCE<br>AREA</span>
-                            </div>
-                            
-                            <!-- Load Badge -->
-                            <div style="position: absolute; left: 50%; top: 220px; transform: translateX(-50%); background: #1e293b; color: #60a5fa; padding: 12px 20px; border-radius: 8px; border: 2px solid #60a5fa; font-weight: 700; font-size: 18px; font-family: 'Courier New', monospace;">
-                                832
-                            </div>
-                            
-                            <!-- CT Badge -->
-                            <div style="position: absolute; right: 60px; top: 240px; background: #1e293b; color: #60a5fa; padding: 10px 14px; border-radius: 8px; border: 2px solid #60a5fa; font-weight: 600; font-size: 12px;">
-                                CT: 11.95m
-                            </div>
-                            
-                            <!-- Vertical Cable -->
-                            <div style="position: absolute; left: 50%; top: 50%; transform: translateX(-50%); width: 12px; height: 280px; background: linear-gradient(90deg, #475569 0%, #64748b 50%, #475569 100%); border-radius: 6px;"></div>
-                            
-                            <!-- Bottom Beam -->
-                            <div style="background: #3d4757; height: 20px; border-radius: 3px; margin-top: 60px;"></div>
-                            
-                            <!-- Bottom Column Numbers -->
-                            <div style="display: flex; justify-content: space-between; margin-top: 20px; padding: 0 20px;">
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">1</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">2</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">3</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">4</div>
-                                <div style="width: 40px; height: 40px; border: 2px solid #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-weight: 600;">5</div>
-                            </div>
+                <!-- Live monitoring header cards -->
+                <div class="live-tab-grid" style="margin-bottom:18px;">
+                    <div class="card live-card">
+                        <div class="card-body">
+                            <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Long Travel</div>
+                            <div style="font-size:20px; font-weight:700; color:var(--text-dark);" id="liveLT">23.90 m</div>
                         </div>
                     </div>
-                    
-                    <!-- Data Display Row -->
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
-                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Long Travel</div>
-                            <div style="font-size: 32px; font-weight: 700; color: var(--text-dark); font-family: 'Courier New', monospace; margin-bottom: 6px;">23.90</div>
-                            <div style="font-size: 14px; color: var(--text-muted); display: flex; gap: 6px; align-items: center;">
-                                <span>m</span>
-                                <select style="padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; background: white; cursor: pointer;">
-                                    <option>m</option>
-                                    <option>ft</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
-                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Cross Travel</div>
-                            <div style="font-size: 32px; font-weight: 700; color: var(--text-dark); font-family: 'Courier New', monospace; margin-bottom: 6px;">11.95</div>
-                            <div style="font-size: 14px; color: var(--text-muted); display: flex; gap: 6px; align-items: center;">
-                                <span>m</span>
-                                <select style="padding: 4px 8px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 12px; background: white; cursor: pointer;">
-                                    <option>m</option>
-                                    <option>ft</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div style="background: white; border-radius: 12px; padding: 24px; border: 1px solid #e2e8f0;">
-                            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px;">Column</div>
-                            <div style="font-size: 32px; font-weight: 700; color: #3b82f6; font-family: 'Courier New', monospace; margin-bottom: 6px;">22</div>
+                    <div class="card live-card">
+                        <div class="card-body">
+                            <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Cross Travel</div>
+                            <div style="font-size:20px; font-weight:700; color:var(--text-dark);" id="liveCT">11.95 m</div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Live Crane Monitoring System -->
+                <div class="card" style="margin-bottom:18px;">
+                    <div class="card-header">
+                        <span class="card-title">Crane Operations</span>
+                    </div>
+                    <div class="card-body" style="overflow-x:auto;">
+                        <div id="craneTrack" style="position:relative; height:220px; min-width:900px; background:#e5e7eb; border-radius:10px; border:1px solid #e2e8f0; overflow-y:auto;">
+                            <!-- Top Track Bar -->
+                            <div style="position:absolute; left:130px; right:10px; top:40px; height:16px; background:#374151; border-radius:8px;"></div>
+                            <!-- Bottom Track Bar -->
+                            <div style="position:absolute; left:130px; right:10px; bottom:40px; height:16px; background:#374151; border-radius:8px;"></div>
+                            <!-- Maintenance Area -->
+                            <div style="position:absolute; left:0; top:0; bottom:0; width:120px; background: repeating-linear-gradient(135deg, #fde68a 0 20px, #fbbf24 20px 40px); opacity:0.5; border-radius:10px 0 0 10px; display:flex; align-items:center; justify-content:center;">
+                                <span style="writing-mode:vertical-lr; text-align:center; font-size:16px; color:#b45309; font-weight:700; letter-spacing:2px; opacity:0.7;">MAINTENANCE AREA</span>
+                            </div>
+                            <!-- Columns -->
+                            <div id="craneColumns" style="position:absolute; top:10px; left:130px; right:10px; height:30px; display:flex; justify-content:space-between;">
+                                <!-- JS will render 22 columns here -->
+                            </div>
+                            <!-- Track -->
+                            <div style="position:absolute; top:60px; left:130px; right:10px; height:20px; background:#3b82f6; border-radius:6px;"></div>
+                            <!-- Crane -->
+                            <div id="craneCart" style="position:absolute; top:50px; left:130px; width:40px; height:40px; background:linear-gradient(135deg,#1e40af,#60a5fa); border-radius:50%; border:3px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.12); display:flex; align-items:center; justify-content:center; transition:left 0.3s cubic-bezier(.4,2,.3,1);">
+                                <span style="color:#fff; font-weight:700;">832</span>
+                            </div>
+                            <!-- LT/CT Labels -->
+                            <div id="craneLTLabel" style="position:absolute; top:10px; left:calc(50% - 60px); background:#1e293b; color:#fff; font-size:14px; font-weight:600; padding:6px 16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">LT: 23.90m</div>
+                            <div id="craneCTLabel" style="position:absolute; top:110px; left:calc(50% + 40px); background:#1e293b; color:#fff; font-size:14px; font-weight:600; padding:6px 16px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.10);">CT: 11.95m</div>
+                        </div>
+                        <div style="margin-top:12px; font-size:13px; color:var(--text-muted);">Columns: 22 &nbsp;|&nbsp; LT/CT position updates in real time from UDP port 5000</div>
+                        <div style="margin-top:8px; display:flex; align-items:center; gap:16px;">
+                            <input type="range" min="1" max="22" value="1" id="craneColumnSlider" style="width:300px;">
+                            <span style="font-size:13px; color:#3b82f6; font-weight:600;">Slide to view columns</span>
+                            <button id="startSimBtn" style="padding:8px 18px; background:#22c55e; color:white; border:none; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer;">Start Simulate</button>
+                            <button id="stopSimBtn" style="padding:8px 18px; background:#ef4444; color:white; border:none; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; margin-left:8px;">Stop Simulate</button>
+                        </div>
+                    </div>
+                </div>
+                    <!-- Crane Visualization Card removed as requested -->
+                    
+                    <!-- Data Display Row removed as requested -->
+                </div>
+            </div> -->
 
             <!-- EVENTS TAB -->
             <div id="tab-events" class="content-section hidden">
@@ -461,6 +414,30 @@
                     <p style="font-size: 14px; color: var(--text-muted); margin: 0;">Configure network and device parameters</p>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1200px;">
+                        <!-- UDP Configuration Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <span class="card-title">UDP Configuration</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="settings-row">
+                                    <label class="settings-label" for="udpPortInput">UDP Port:</label>
+                                    <input type="number" id="udpPortInput" class="setting-input" value="5000" min="1" max="65535" style="width:120px;">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label" for="udpIpInput">UDP IP Address:</label>
+                                    <input type="text" id="udpIpInput" class="setting-input" value="192.168.1.100" style="width:180px;">
+                                </div>
+                                <div class="settings-row">
+                                    <label class="settings-label" for="udpStatusInput">UDP Status:</label>
+                                    <select id="udpStatusInput" class="setting-input" style="width:120px;">
+                                        <option value="Connected">Connected</option>
+                                        <option value="Disconnected">Disconnected</option>
+                                    </select>
+                                </div>
+                                <button style="margin-top:18px; padding:10px 24px; background:var(--brand-blue); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:14px;">Save Configuration</button>
+                            </div>
+                        </div>
                     
                     <!-- Network Settings Card -->
                     <div class="card">
